@@ -198,7 +198,8 @@ function MobileProcessCarousel() {
     if (!el) return;
     let frame = 0;
     const update = () => {
-      const w = el.clientWidth || 1;
+      const first = el.children[0] as HTMLElement | undefined;
+      const w = first?.offsetWidth || el.clientWidth || 1;
       const idx = Math.round(el.scrollLeft / w);
       setActive(Math.max(0, Math.min(steps.length - 1, idx)));
     };
@@ -217,15 +218,39 @@ function MobileProcessCarousel() {
   function go(i: number) {
     const el = trackRef.current;
     if (!el) return;
-    el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+    const target = el.children[i] as HTMLElement | undefined;
+    if (target) el.scrollTo({ left: target.offsetLeft, behavior: "smooth" });
   }
+
+  const onFirst = active === 0;
 
   return (
     <div className="md:hidden">
       <div className="mx-auto mb-5 flex max-w-[1400px] items-center justify-between px-6">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-bone-2">
-          Swipe through the procedure
-        </span>
+        <motion.div
+          aria-hidden
+          animate={{ opacity: onFirst ? 1 : 0.4 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="flex items-center gap-2.5"
+        >
+          <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-accent">
+            Swipe
+          </span>
+          <motion.span
+            animate={{ x: onFirst ? [0, 6, 0] : 0 }}
+            transition={
+              onFirst
+                ? { duration: 1.4, repeat: Infinity, ease: [0.4, 0, 0.6, 1] }
+                : { duration: 0 }
+            }
+            className="font-mono text-[16px] leading-none text-accent"
+          >
+            →
+          </motion.span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-bone-2">
+            through procedure
+          </span>
+        </motion.div>
         <span className="font-mono text-[10px] uppercase tracking-widest text-accent">
           {String(active + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
         </span>
@@ -240,7 +265,7 @@ function MobileProcessCarousel() {
         {steps.map((step, i) => (
           <article
             key={step.num}
-            className="flex w-screen shrink-0 snap-start flex-col px-6 pb-6"
+            className="flex w-[90vw] shrink-0 snap-start flex-col px-6 pb-6"
             aria-label={`Stage ${i + 1} of ${steps.length}: ${step.title}`}
           >
             <div className="flex items-baseline gap-4 border-t border-rule/60 pt-6">
