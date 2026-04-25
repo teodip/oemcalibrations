@@ -55,9 +55,17 @@ const services: Service[] = [
 
 export function Services() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({
     target: wrapRef,
     offset: ["start end", "end start"],
+  });
+  // Tracks which service is centered in the viewport — drives the mobile
+  // SensorStrip readout so the active service stays in sync with what the
+  // user is actually reading.
+  const { scrollYProgress: listProgress } = useScroll({
+    target: listRef,
+    offset: ["start center", "end center"],
   });
 
   // 8 services — distribute callout opacities across scroll progress
@@ -101,7 +109,7 @@ export function Services() {
           <div className="sticky top-16 z-20 -mx-6 border-b border-rule/70 bg-bg/90 px-6 pb-3 pt-3 backdrop-blur-md lg:static lg:top-auto lg:z-auto lg:col-span-5 lg:mx-0 lg:border-0 lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0 lg:backdrop-blur-none">
             {/* Mobile: compact horizontal sensor strip */}
             <div className="lg:hidden">
-              <SensorStrip callouts={calloutOpacities} />
+              <SensorStrip scrollProgress={listProgress} services={services} />
             </div>
 
             {/* Desktop: full top-down vehicle diagram */}
@@ -144,7 +152,7 @@ export function Services() {
           </div>
 
           {/* Services list — each ~70vh on lg, tighter on mobile */}
-          <ol className="mt-2 lg:col-span-7 lg:mt-0">
+          <ol ref={listRef} className="mt-2 lg:col-span-7 lg:mt-0">
             {services.map((s) => (
               <li
                 key={s.num}
