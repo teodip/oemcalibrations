@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex items-center gap-3">
           <Crosshair size={14} color="var(--accent)" />
           <span className="font-mono text-[11px] uppercase tracking-widest text-bone-2">
-            [BUSINESS NAME] · OEM Calibration · [CITY], [STATE] · &copy; 2026
+            OEM Calibrations · [CITY], [STATE] · &copy; 2026
           </span>
         </div>
         <div className="flex items-center gap-6">
