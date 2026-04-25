@@ -1,22 +1,45 @@
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 type Props = { className?: string };
 
 const monoFont = "JetBrains Mono, monospace";
 const ease = [0.16, 1, 0.3, 1];
 
-const drawIn = {
-  initial: { pathLength: 0, opacity: 0 },
-  whileInView: { pathLength: 1, opacity: 1 },
-  viewport: { once: true, margin: "-10% 0px" },
+// Single observer per SVG. Children animate via variant propagation —
+// reliable on iOS Safari and inside horizontally-scrolled snap carousels.
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
 };
-const fadeIn = {
-  initial: { opacity: 0 },
-  whileInView: { opacity: 1 },
-  viewport: { once: true, margin: "-10% 0px" },
+const fade: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.55, ease } },
+};
+const draw: Variants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  show: {
+    pathLength: 1,
+    opacity: 1,
+    transition: { duration: 0.9, ease },
+  },
+};
+const grow: Variants = {
+  hidden: { scaleX: 0, opacity: 0 },
+  show: {
+    scaleX: 1,
+    opacity: 1,
+    transition: { duration: 1.4, ease },
+  },
 };
 
-// 01 — Pre-scan: a list of vehicle modules with fault-status dots
+const svgProps = {
+  initial: "hidden" as const,
+  whileInView: "show" as const,
+  viewport: { once: true, amount: 0.2 },
+  variants: container,
+};
+
+// 01 — Pre-scan
 export function PreScan({ className }: Props) {
   const rows = [
     { code: "FCM-01", label: "FORWARD CAMERA", state: "fault" },
@@ -27,8 +50,13 @@ export function PreScan({ className }: Props) {
     { code: "ABS-01", label: "ABS / ESC", state: "ok" },
   ];
   return (
-    <svg viewBox="0 0 240 240" className={className} fill="none" aria-hidden>
-      {/* Header */}
+    <motion.svg
+      viewBox="0 0 240 240"
+      className={className}
+      fill="none"
+      aria-hidden
+      {...svgProps}
+    >
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="20" fill="var(--bone-2)">
           DTC INVENTORY · PRE
@@ -39,7 +67,6 @@ export function PreScan({ className }: Props) {
       </g>
       <line x1="12" y1="28" x2="228" y2="28" stroke="var(--rule)" strokeWidth={1} />
 
-      {/* Rows */}
       {rows.map((r, i) => {
         const y = 50 + i * 24;
         const dotColor =
@@ -49,11 +76,7 @@ export function PreScan({ className }: Props) {
               ? "var(--bone)"
               : "var(--bone-2)";
         return (
-          <motion.g
-            key={r.code}
-            {...fadeIn}
-            transition={{ duration: 0.5, delay: 0.15 + i * 0.06, ease }}
-          >
+          <motion.g key={r.code} variants={fade}>
             <line
               x1="12"
               y1={y + 8}
@@ -83,7 +106,6 @@ export function PreScan({ className }: Props) {
             >
               {r.label}
             </text>
-            {/* Status indicator */}
             <rect
               x="200"
               y={y - 6}
@@ -105,9 +127,13 @@ export function PreScan({ className }: Props) {
         );
       })}
 
-      {/* Footer summary */}
       <line x1="12" y1="200" x2="228" y2="200" stroke="var(--rule)" strokeWidth={1} />
-      <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
+      <motion.g
+        variants={fade}
+        fontFamily={monoFont}
+        fontSize="8"
+        letterSpacing="0.14em"
+      >
         <text x="12" y="216" fill="var(--bone-2)">
           FAULTS
         </text>
@@ -120,24 +146,22 @@ export function PreScan({ className }: Props) {
         <text x="120" y="228" fill="var(--bone)" fontSize="11">
           06
         </text>
-      </g>
-    </svg>
+      </motion.g>
+    </motion.svg>
   );
 }
 
-// 02 — Setup: vehicle on level surface with environmental annotations
+// 02 — Setup
 export function Setup({ className }: Props) {
   return (
-    <svg viewBox="0 0 240 240" className={className} fill="none" aria-hidden>
-      {/* Floor / level baseline */}
-      <line
-        x1="12"
-        y1="170"
-        x2="228"
-        y2="170"
-        stroke="var(--rule)"
-        strokeWidth={1}
-      />
+    <motion.svg
+      viewBox="0 0 240 240"
+      className={className}
+      fill="none"
+      aria-hidden
+      {...svgProps}
+    >
+      <line x1="12" y1="170" x2="228" y2="170" stroke="var(--rule)" strokeWidth={1} />
       <line
         x1="12"
         y1="174"
@@ -147,10 +171,9 @@ export function Setup({ className }: Props) {
         strokeOpacity={0.5}
         strokeDasharray="2 4"
       />
-      {/* Vehicle silhouette top-down (compact) */}
+
       <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.1, ease }}
+        variants={fade}
         stroke="var(--bone-2)"
         strokeOpacity={0.7}
         strokeWidth={1}
@@ -161,12 +184,10 @@ export function Setup({ className }: Props) {
         <line x1="96" y1="148" x2="144" y2="148" />
         <line x1="96" y1="108" x2="144" y2="108" strokeOpacity={0.4} />
         <line x1="96" y1="132" x2="144" y2="132" strokeOpacity={0.4} />
-        {/* Wheels */}
         <rect x="88" y="98" width="8" height="14" />
         <rect x="144" y="98" width="8" height="14" />
         <rect x="88" y="138" width="8" height="14" />
         <rect x="144" y="138" width="8" height="14" />
-        {/* Centerline */}
         <line
           x1="120"
           y1="48"
@@ -177,7 +198,6 @@ export function Setup({ className }: Props) {
         />
       </motion.g>
 
-      {/* Header */}
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="20" fill="var(--bone-2)">
           PRE-FLIGHT · LEVEL CHECK
@@ -185,22 +205,18 @@ export function Setup({ className }: Props) {
       </g>
       <line x1="12" y1="28" x2="228" y2="28" stroke="var(--rule)" />
 
-      {/* Annotations / measurement callouts */}
       <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.5, delay: 0.4, ease }}
+        variants={fade}
         fontFamily={monoFont}
         fontSize="8"
         letterSpacing="0.12em"
       >
-        {/* Top: level */}
         <line x1="120" y1="40" x2="120" y2="48" stroke="var(--accent)" />
         <circle cx="120" cy="38" r="2" fill="var(--accent)" />
         <text x="120" y="32" textAnchor="middle" fill="var(--accent)">
           LEVEL ±0.05°
         </text>
 
-        {/* Left: tire pressure */}
         <line
           x1="40"
           y1="105"
@@ -217,7 +233,6 @@ export function Setup({ className }: Props) {
           OEM SPEC
         </text>
 
-        {/* Right: ride height */}
         <line
           x1="154"
           y1="120"
@@ -234,14 +249,7 @@ export function Setup({ className }: Props) {
           ±5 MM
         </text>
 
-        {/* Bottom: fuel */}
-        <line
-          x1="120"
-          y1="180"
-          x2="120"
-          y2="190"
-          stroke="var(--accent)"
-        />
+        <line x1="120" y1="180" x2="120" y2="190" stroke="var(--accent)" />
         <text x="120" y="200" textAnchor="middle" fill="var(--accent)">
           FUEL
         </text>
@@ -250,16 +258,21 @@ export function Setup({ className }: Props) {
         </text>
       </motion.g>
 
-      {/* Bottom rail */}
       <line x1="12" y1="224" x2="228" y2="224" stroke="var(--rule)" />
-    </svg>
+    </motion.svg>
   );
 }
 
-// 03 — Targets: refined target board (replaces existing TargetBoard for stage)
+// 03 — Targets
 export function Targets({ className }: Props) {
   return (
-    <svg viewBox="0 0 240 240" className={className} fill="none" aria-hidden>
+    <motion.svg
+      viewBox="0 0 240 240"
+      className={className}
+      fill="none"
+      aria-hidden
+      {...svgProps}
+    >
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="20" fill="var(--bone-2)">
           OEM TARGET · DISTANCE
@@ -270,40 +283,24 @@ export function Targets({ className }: Props) {
       </g>
       <line x1="12" y1="28" x2="228" y2="28" stroke="var(--rule)" />
 
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.1, ease }}
-        stroke="var(--bone-2)"
-        strokeOpacity={0.5}
-      >
-        {/* Outer board */}
+      <motion.g variants={fade} stroke="var(--bone-2)" strokeOpacity={0.5}>
         <rect x="40" y="46" width="160" height="160" />
         <line x1="40" y1="126" x2="200" y2="126" strokeDasharray="2 6" />
         <line x1="120" y1="46" x2="120" y2="206" strokeDasharray="2 6" />
       </motion.g>
 
-      <motion.g
-        {...drawIn}
-        transition={{ duration: 1.0, delay: 0.3, ease }}
-        stroke="var(--accent)"
-        fill="none"
-      >
+      <motion.g variants={draw} stroke="var(--accent)" fill="none">
         <circle cx="120" cy="126" r="40" />
         <circle cx="120" cy="126" r="22" />
         <circle cx="120" cy="126" r="8" />
       </motion.g>
 
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.5, delay: 1.0 }}
-        stroke="var(--accent)"
-      >
+      <motion.g variants={fade} stroke="var(--accent)">
         <line x1="80" y1="126" x2="160" y2="126" />
         <line x1="120" y1="86" x2="120" y2="166" />
         <circle cx="120" cy="126" r="2.5" fill="var(--accent)" />
       </motion.g>
 
-      {/* Distance markers */}
       <g
         fontFamily={monoFont}
         fontSize="8"
@@ -317,14 +314,20 @@ export function Targets({ className }: Props) {
           OFFSET 0
         </text>
       </g>
-    </svg>
+    </motion.svg>
   );
 }
 
-// 04 — Calibration: scan-tool screen with module + progress
+// 04 — Calibration
 export function CalibrationDiagram({ className }: Props) {
   return (
-    <svg viewBox="0 0 240 240" className={className} fill="none" aria-hidden>
+    <motion.svg
+      viewBox="0 0 240 240"
+      className={className}
+      fill="none"
+      aria-hidden
+      {...svgProps}
+    >
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="20" fill="var(--bone-2)">
           SCAN TOOL · ACTIVE
@@ -335,23 +338,15 @@ export function CalibrationDiagram({ className }: Props) {
       </g>
       <line x1="12" y1="28" x2="228" y2="28" stroke="var(--rule)" />
 
-      {/* Tool body */}
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.1, ease }}
-        stroke="var(--bone-2)"
-        strokeOpacity={0.7}
-      >
+      <motion.g variants={fade} stroke="var(--bone-2)" strokeOpacity={0.7}>
         <rect x="32" y="48" width="176" height="124" />
         <rect x="32" y="48" width="176" height="14" fill="var(--bg-2)" />
-        {/* Three small status LEDs in title bar */}
         <circle cx="42" cy="55" r="1.5" fill="var(--accent)" />
         <circle cx="50" cy="55" r="1.5" fill="var(--bone-2)" />
         <circle cx="58" cy="55" r="1.5" fill="var(--bone-2)" opacity={0.4} />
       </motion.g>
 
-      {/* Screen content */}
-      <g fontFamily={monoFont} letterSpacing="0.1em">
+      <motion.g variants={fade} fontFamily={monoFont} letterSpacing="0.1em">
         <text x="40" y="80" fontSize="9" fill="var(--bone)">
           MODULE
         </text>
@@ -372,9 +367,8 @@ export function CalibrationDiagram({ className }: Props) {
         <text x="200" y="120" fontSize="9" textAnchor="end" fill="var(--accent)">
           RUNNING
         </text>
-      </g>
+      </motion.g>
 
-      {/* Progress bar */}
       <g>
         <rect
           x="40"
@@ -388,12 +382,11 @@ export function CalibrationDiagram({ className }: Props) {
         <motion.rect
           x="40"
           y="138"
+          width="108"
           height="8"
           fill="var(--accent)"
-          initial={{ width: 0 }}
-          whileInView={{ width: 108 }}
-          viewport={{ once: true, margin: "-10% 0px" }}
-          transition={{ duration: 1.6, delay: 0.5, ease }}
+          variants={grow}
+          style={{ transformOrigin: "40px 142px" }}
         />
         <text
           x="200"
@@ -408,7 +401,6 @@ export function CalibrationDiagram({ className }: Props) {
         </text>
       </g>
 
-      {/* OBD cable suggestion */}
       <g
         stroke="var(--bone-2)"
         strokeOpacity={0.5}
@@ -430,14 +422,20 @@ export function CalibrationDiagram({ className }: Props) {
       >
         OBD-II
       </text>
-    </svg>
+    </motion.svg>
   );
 }
 
-// 05 — Post-scan: pre vs post DTC counts as a diff
+// 05 — Post-scan
 export function PostScan({ className }: Props) {
   return (
-    <svg viewBox="0 0 240 240" className={className} fill="none" aria-hidden>
+    <motion.svg
+      viewBox="0 0 240 240"
+      className={className}
+      fill="none"
+      aria-hidden
+      {...svgProps}
+    >
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="20" fill="var(--bone-2)">
           DTC DIFF · PRE / POST
@@ -448,7 +446,6 @@ export function PostScan({ className }: Props) {
       </g>
       <line x1="12" y1="28" x2="228" y2="28" stroke="var(--rule)" />
 
-      {/* Two-column compare */}
       <g fontFamily={monoFont} letterSpacing="0.14em">
         <text x="58" y="58" fontSize="9" textAnchor="middle" fill="var(--bone-2)">
           PRE
@@ -458,11 +455,7 @@ export function PostScan({ className }: Props) {
         </text>
       </g>
 
-      {/* Pre column — fault dots */}
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.1, ease }}
-      >
+      <motion.g variants={fade}>
         {Array.from({ length: 12 }).map((_, i) => {
           const col = i % 3;
           const row = Math.floor(i / 3);
@@ -481,11 +474,7 @@ export function PostScan({ className }: Props) {
         })}
       </motion.g>
 
-      {/* Post column — empty squares */}
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.4, ease }}
-      >
+      <motion.g variants={fade}>
         {Array.from({ length: 12 }).map((_, i) => {
           const col = i % 3;
           const row = Math.floor(i / 3);
@@ -506,8 +495,7 @@ export function PostScan({ className }: Props) {
         })}
       </motion.g>
 
-      {/* Big diff readout */}
-      <g fontFamily={monoFont} letterSpacing="0.05em">
+      <motion.g variants={fade} fontFamily={monoFont} letterSpacing="0.05em">
         <text x="58" y="180" fontSize="22" textAnchor="middle" fill="var(--accent)">
           12
         </text>
@@ -517,9 +505,8 @@ export function PostScan({ className }: Props) {
         <text x="182" y="180" fontSize="22" textAnchor="middle" fill="var(--bone)">
           00
         </text>
-      </g>
+      </motion.g>
 
-      {/* Footer */}
       <line x1="12" y1="200" x2="228" y2="200" stroke="var(--rule)" />
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="216" fill="var(--bone-2)">
@@ -529,14 +516,20 @@ export function PostScan({ className }: Props) {
           COMPLETE
         </text>
       </g>
-    </svg>
+    </motion.svg>
   );
 }
 
-// 06 — Documentation: a layered PDF report layout
+// 06 — Documentation
 export function Documentation({ className }: Props) {
   return (
-    <svg viewBox="0 0 240 240" className={className} fill="none" aria-hidden>
+    <motion.svg
+      viewBox="0 0 240 240"
+      className={className}
+      fill="none"
+      aria-hidden
+      {...svgProps}
+    >
       <g fontFamily={monoFont} fontSize="8" letterSpacing="0.14em">
         <text x="12" y="20" fill="var(--bone-2)">
           DELIVERABLE · SIGNED
@@ -547,12 +540,7 @@ export function Documentation({ className }: Props) {
       </g>
       <line x1="12" y1="28" x2="228" y2="28" stroke="var(--rule)" />
 
-      {/* Stacked pages */}
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.1, ease }}
-      >
-        {/* Back page (offset down-right) */}
+      <motion.g variants={fade}>
         <rect
           x="64"
           y="60"
@@ -563,7 +551,6 @@ export function Documentation({ className }: Props) {
           fill="var(--bg-2)"
           strokeWidth={1}
         />
-        {/* Mid page */}
         <rect
           x="58"
           y="54"
@@ -574,7 +561,6 @@ export function Documentation({ className }: Props) {
           fill="var(--bg-2)"
           strokeWidth={1}
         />
-        {/* Top page */}
         <rect
           x="52"
           y="48"
@@ -586,12 +572,7 @@ export function Documentation({ className }: Props) {
         />
       </motion.g>
 
-      {/* Top page contents */}
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.5, delay: 0.4, ease }}
-      >
-        {/* Header bar */}
+      <motion.g variants={fade}>
         <rect x="60" y="58" width="112" height="3" fill="var(--accent)" />
         <text
           x="60"
@@ -614,7 +595,6 @@ export function Documentation({ className }: Props) {
           2024 RAV4 XLE
         </text>
 
-        {/* Body lines */}
         {[100, 110, 120, 130, 140, 150].map((y, i) => (
           <line
             key={y}
@@ -628,10 +608,15 @@ export function Documentation({ className }: Props) {
           />
         ))}
 
-        {/* Section divider */}
-        <line x1="60" y1="162" x2="172" y2="162" stroke="var(--accent)" strokeOpacity={0.5} />
+        <line
+          x1="60"
+          y1="162"
+          x2="172"
+          y2="162"
+          stroke="var(--accent)"
+          strokeOpacity={0.5}
+        />
 
-        {/* Signature block */}
         <text
           x="60"
           y="178"
@@ -661,11 +646,7 @@ export function Documentation({ className }: Props) {
         </text>
       </motion.g>
 
-      {/* Stamp */}
-      <motion.g
-        {...fadeIn}
-        transition={{ duration: 0.6, delay: 0.9, ease }}
-      >
+      <motion.g variants={fade}>
         <circle
           cx="200"
           cy="200"
@@ -706,7 +687,7 @@ export function Documentation({ className }: Props) {
           J2534
         </text>
       </motion.g>
-    </svg>
+    </motion.svg>
   );
 }
 
