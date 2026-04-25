@@ -153,26 +153,48 @@ export function Services() {
 
           {/* Services list — each ~70vh on lg, tighter on mobile */}
           <ol ref={listRef} className="mt-2 lg:col-span-7 lg:mt-0">
-            {services.map((s) => (
+            {services.map((s, i) => (
               <li
                 key={s.num}
-                className="flex min-h-[58vh] flex-col justify-center border-b border-rule/60 py-10 lg:min-h-[70vh] lg:py-12"
+                className="relative isolate -mx-6 flex min-h-[58vh] flex-col justify-center overflow-hidden border-b border-rule/60 px-6 py-12 lg:mx-0 lg:min-h-[70vh] lg:px-10 lg:py-16"
               >
-                <Reveal>
-                  <div className="flex items-baseline gap-6">
-                    <span className="font-mono text-[13px] tracking-widest text-accent lg:text-[14px]">
-                      {s.num}
-                    </span>
-                    <span className="inline-block h-px w-12 bg-rule" />
-                  </div>
-                  <h3 className="display mt-5 text-[clamp(1.5rem,5.5vw,2.5rem)] text-bone lg:mt-6">
-                    {s.title}
-                  </h3>
-                  <p
-                    className="mt-5 max-w-[58ch] font-serif text-[15.5px] leading-[1.65] text-bone-2 lg:mt-6 lg:text-[16.5px] lg:leading-[1.7]"
-                    dangerouslySetInnerHTML={{ __html: s.body }}
-                  />
-                </Reveal>
+                {/* Background image */}
+                <img
+                  src={`/services/${s.num}.png`}
+                  alt=""
+                  aria-hidden
+                  loading={i < 2 ? "eager" : "lazy"}
+                  decoding="async"
+                  className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center"
+                />
+                {/* Darkening overlay — keeps the instrument feel and typography readable */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-10 bg-bg/[0.84]"
+                />
+                {/* Faint cyan duotone tint */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-accent/[0.05] via-transparent to-accent/[0.06]"
+                />
+
+                <div className="relative z-20">
+                  <Reveal>
+                    <div className="flex items-baseline gap-6">
+                      <span className="font-mono text-[13px] tracking-widest text-accent lg:text-[14px]">
+                        {s.num}
+                      </span>
+                      <span className="inline-block h-px w-12 bg-rule" />
+                    </div>
+                    <h3 className="display mt-5 text-[clamp(1.5rem,5.5vw,2.5rem)] text-bone lg:mt-6">
+                      {s.title}
+                    </h3>
+                    <p
+                      className="mt-5 max-w-[58ch] font-serif text-[15.5px] leading-[1.65] text-bone-2 lg:mt-6 lg:text-[16.5px] lg:leading-[1.7]"
+                      dangerouslySetInnerHTML={{ __html: s.body }}
+                    />
+                  </Reveal>
+                </div>
               </li>
             ))}
           </ol>
