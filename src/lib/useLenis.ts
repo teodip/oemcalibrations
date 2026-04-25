@@ -9,21 +9,21 @@ export function useLenis() {
 
     if (reduce) return;
 
+    // Touch devices already have well-tuned native momentum. Lenis on touch
+    // tends to fight that and feel snappy/glitchy. Stick to native scroll
+    // on phones; scroll-driven animations still work because they read from
+    // window.scroll regardless of who's driving it.
     const isTouch =
       typeof window !== "undefined" &&
       window.matchMedia("(pointer: coarse)").matches;
+    if (isTouch) return;
 
     const lenis = new Lenis({
-      duration: isTouch ? 0.9 : 1.1,
+      duration: 1.1,
       easing: (t: number) => 1 - Math.pow(1 - t, 4),
       gestureOrientation: "vertical",
       smoothWheel: true,
-      // Run smoothing on touch devices too — the user wants fluid scroll on mobile.
-      // syncTouch hands native touch events to Lenis instead of the browser.
-      syncTouch: isTouch,
-      syncTouchLerp: 0.085,
       wheelMultiplier: 1,
-      touchMultiplier: 1.4,
     });
 
     let rafId = 0;
