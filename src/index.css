@@ -1,0 +1,156 @@
+@import "@fontsource/newsreader/400.css";
+@import "@fontsource/newsreader/500.css";
+@import "@fontsource/newsreader/400-italic.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0a0a;
+  --bg-2: #111111;
+  --bone: #ece6d9;
+  --bone-2: #b8b2a6;
+  --rule: #2a2a2a;
+  --accent: #00c2d1;
+  --accent-2: #1ad4e2;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--bone);
+  font-family:
+    "Geist Variable", "Geist", system-ui, -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 96px 96px;
+  background-attachment: fixed;
+  background-position: center center;
+}
+
+/* Selection */
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Scrollbar (subtle, instrument-feel) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rule);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bone-2);
+}
+
+/* Default link reset */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Lenis recommended baseline */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Display type utility */
+.display {
+  font-family: "Newsreader", ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+}
+
+/* Mono eyebrow */
+.eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+/* Accessibility: reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Form input baseline (square, hairline) */
+input,
+select,
+textarea {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--bone);
+  padding: 0.75rem 0.875rem;
+  font-family:
+    "Geist Variable", "Geist", system-ui, sans-serif;
+  font-size: 14px;
+  border-radius: 0;
+  width: 100%;
+  outline: none;
+  transition: border-color 240ms var(--ease-out-expo);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+select {
+  background-color: var(--bg);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--bone-2);
+  opacity: 0.6;
+}
+
+/* Focus visibility on buttons / anchors */
+button:focus-visible,
+a:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
