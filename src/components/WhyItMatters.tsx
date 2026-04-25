@@ -1,4 +1,5 @@
 import { Reveal } from "./Reveal";
+import { Trajectory } from "../svg/Trajectory";
 
 const facts: Array<[string, string]> = [
   ["Tolerance", "±0.1° angular"],
@@ -44,6 +45,20 @@ export function WhyItMatters() {
               and reference points the manufacturer published &mdash; and
               produces the documentation that proves it.
             </p>
+          </Reveal>
+
+          <Reveal delay={0.2}>
+            <div className="mt-12 border border-rule/60 p-4 sm:p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-bone-2">
+                  Diagram · 0.5° offset over distance
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-widest text-accent">
+                  Fig. 01
+                </span>
+              </div>
+              <Trajectory className="h-auto w-full text-bone" />
+            </div>
           </Reveal>
         </div>
 

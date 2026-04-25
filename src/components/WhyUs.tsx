@@ -1,4 +1,10 @@
+import type { ComponentType } from "react";
 import { Reveal } from "./Reveal";
+import {
+  PillarEquipment,
+  PillarProcedure,
+  PillarDocumentation,
+} from "../svg/PillarIcons";
 
 type Pillar = {
   num: string;
@@ -6,6 +12,7 @@ type Pillar = {
   title: string;
   body: string;
   spec: string;
+  Icon: ComponentType<{ className?: string }>;
 };
 
 const pillars: Pillar[] = [
@@ -15,6 +22,7 @@ const pillars: Pillar[] = [
     title: "OEM target boards.",
     body: "Manufacturer-spec, not generic. Replaced on schedule. Stored flat, calibrated to published dimensions, inspected before every job. The targets are the procedure &mdash; everything downstream depends on them being right.",
     spec: "Hunter · Autel · OEM-supplied",
+    Icon: PillarEquipment,
   },
   {
     num: "02",
@@ -22,6 +30,7 @@ const pillars: Pillar[] = [
     title: "Manufacturer service procedures.",
     body: "Every calibration referenced to the current OEM service procedure for the specific year, make, model, and trim. No shortcuts. No &ldquo;close enough.&rdquo; No re-using a Camry procedure for a Lexus.",
     spec: "Mitchell · ALLDATA · OEM portal",
+    Icon: PillarProcedure,
   },
   {
     num: "03",
@@ -29,6 +38,7 @@ const pillars: Pillar[] = [
     title: "Pre-scan, post-scan, signed.",
     body: "Every job leaves with a pre-scan report, a post-scan report, target-board photographs, the OEM procedure reference, technician sign-off, and a signed deliverable PDF. Audit-ready, exportable, durable.",
     spec: "PDF · CCC · Mitchell estimating",
+    Icon: PillarDocumentation,
   },
 ];
 
@@ -52,13 +62,16 @@ export function WhyUs() {
           {pillars.map((p, i) => (
             <Reveal key={p.num} delay={i * 0.07}>
               <article className="border-t border-rule/70 pt-8">
-                <div className="flex items-baseline gap-4">
-                  <span className="font-mono text-[12px] tracking-widest text-accent">
-                    {p.num}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-bone-2">
-                    {p.eyebrow}
-                  </span>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-baseline gap-4">
+                    <span className="font-mono text-[12px] tracking-widest text-accent">
+                      {p.num}
+                    </span>
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-bone-2">
+                      {p.eyebrow}
+                    </span>
+                  </div>
+                  <p.Icon className="h-14 w-14 shrink-0 text-bone" />
                 </div>
                 <h3 className="display mt-6 text-[clamp(1.5rem,2.4vw,2rem)] text-bone">
                   {p.title}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { TargetBoard } from "../svg/TargetBoard";
+import { StageDiagram } from "../svg/StageDiagrams";
 import { Reveal } from "./Reveal";
 
 type Step = {
@@ -157,7 +157,7 @@ export function Process() {
                           {step.num}
                         </span>
                       </div>
-                      <TargetBoard className="h-72 w-full text-bone" />
+                      <StageDiagram num={step.num} className="h-72 w-full text-bone" />
                     </div>
                   </div>
                 </div>
@@ -279,7 +279,7 @@ function MobileProcessCarousel() {
                   {step.num}
                 </span>
               </div>
-              <TargetBoard className="h-44 w-full text-bone" />
+              <StageDiagram num={step.num} className="h-44 w-full text-bone" />
             </div>
           </article>
         ))}
